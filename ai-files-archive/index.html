@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="ru" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Files Archive | Хранилище файлов</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            /* Современная цветовая палитра */
+            --bg-dark: #0a0a0f;
+            --bg-darker: #07070c;
+            --bg-card: #141420;
+            --bg-card-hover: #1a1a2e;
+            --bg-input: #1e1e2e;
+            --border-color: #2a2a3a;
+            
+            /* Акцентные цвета AI */
+            --chatgpt: #10a37f;
+            --deepseek: #2563eb;
+            --grok: #f97316;
+            --claude: #d4a106;
+            --gemini: #4285f4;
+            --other: #8b5cf6;
+            
+            /* Текст */
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0c0;
+            --text-muted: #6b7280;
+            
+            /* Эффекты */
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.5);
+            --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.7);
+            --glow: 0 0 20px rgba(255, 255, 255, 0.1);
+            
+            /* Радиусы */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            
+            /* Анимации */
+            --transition-fast: 0.2s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Сетка с градиентным фоном */
+        .grid-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(16, 163, 127, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(37, 99, 235, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(212, 161, 6, 0.05) 0%, transparent 50%);
+            z-index: -1;
+        }
+
+        /* Навигация */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: rgba(10, 10, 15, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            z-index: 1000;
+            padding: 0 2rem;
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            text-decoration: none;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--chatgpt), var(--deepseek));
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: var(--radius-md);
+            transition: all var(--transition-normal);
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .nav-link.active {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Основной контент */
+        .main-container {
+            max-width: 1400px;
+            margin: 90px auto 2rem;
+            padding: 0 2rem;
+        }
+
+        /* Заголовки секций */
+        .section-header {
+            margin-bottom: 2.5rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #ffffff, #a0a0c0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        /* Статистика */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            text-align: center;
+            transition: all var(--transition-normal);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: var(--shadow);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+        }
+
+        .stat-icon.total { background: rgba(255, 255, 255, 0.1); }
+        .stat-icon.chatgpt { background: rgba(16, 163, 127, 0.2); }
+        .stat-icon.deepseek { background: rgba(37, 99, 235, 0.2); }
+        .stat-icon.grok { background: rgba(249, 115, 22, 0.2); }
+        .stat-icon.claude { background: rgba(212, 161, 6, 0.2); }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: 700;
+            display: block;
+            margin: 0.5rem 0;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Форма загрузки файлов */
+        .upload-card {
+            background: var(--bg-card);
+            border-radius: var(--radius-xl);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .upload-area {
+            border: 2px dashed var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 3rem 2rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            transition: all var(--transition-normal);
+            cursor: pointer;
+        }
+
+        .upload-area:hover, .upload-area.dragover {
+            border-color: var(--deepseek);
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--deepseek);
+            margin-bottom: 1rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-control {
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 0.875rem 1rem;
+            color: var(--text-primary);
+            font-family: inherit;
+            font-size: 0.95rem;
+            transition: all var(--transition-fast);
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--deepseek);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-muted);
+        }
+
+        textarea.form-control {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        select.form-control {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%23a0a0c0' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14 2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 16px;
+        }
+
+        /* Кнопки */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.875rem 1.5rem;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.95rem;
+            border: none;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--deepseek), #4f46e5);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.875rem;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Фильтры */
+        .filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-bottom: 2rem;
+            padding: 1rem;
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            background: var(--bg-input);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .filter-btn.active {
+            background: var(--deepseek);
+            color: white;
+            border-color: var(--deepseek);
+        }
+
+        .search-box {
+            flex-grow: 1;
+            max-width: 400px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-family: inherit;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+        }
+
+        /* Сетка файлов */
+        .files-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .file-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            transition: all var(--transition-normal);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .file-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: var(--shadow);
+        }
+
+        .file-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.375rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .ai-badge.chatgpt { background: rgba(16, 163, 127, 0.2); color: #10a37f; }
+        .ai-badge.deepseek { background: rgba(37, 99, 235, 0.2); color: #60a5fa; }
+        .ai-badge.grok { background: rgba(249, 115, 22, 0.2); color: #f97316; }
+        .ai-badge.claude { background: rgba(212, 161, 6, 0.2); color: #d4a106; }
+        .ai-badge.other { background: rgba(139, 92, 246, 0.2); color: #8b5cf6; }
+
+        .file-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+            color: var(--text-primary);
+        }
+
+        .file-description {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1rem;
+            flex-grow: 1;
+        }
+
+        .file-info {
+            display: flex;
+            justify-content: space-between;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .file-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .tag {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 15px;
+            font-size: 0.75rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: auto;
+        }
+
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            max-width: 800px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 1.5rem;
+            line-height: 1;
+        }
+
+        .modal-body {
+            margin-bottom: 2rem;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        /* Уведомления */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+        }
+
+        .notification.success {
+            background: #10b981;
+            color: white;
+        }
+
+        .notification.error {
+            background: #ef4444;
+            color: white;
+        }
+
+        .notification.info {
+            background: #3b82f6;
+            color: white;
+        }
+
+        /* Адаптивность */
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 0 1rem;
+                margin-top: 80px;
+            }
+            
+            .nav-container {
+                padding: 0 1rem;
+            }
+            
+            .files-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+            
+            .btn {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .filters {
+                flex-direction: column;
+            }
+            
+            .search-box {
+                max-width: 100%;
+            }
+        }
+
+        /* Анимации */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.6s ease-out;
+        }
+
+        /* Скроллбар */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg-darker);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--bg-card);
+            border-radius: 5px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--bg-input);
+        }
+
+        /* Drag and drop эффекты */
+        .dragover {
+            border-color: var(--deepseek) !important;
+            background: rgba(37, 99, 235, 0.1) !important;
+        }
+
+        /* Код в предпросмотре */
+        .code-block {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 1rem;
+            border-radius: var(--radius-md);
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin: 1rem 0;
+        }
+
+        .code-block code {
+            color: #e2e8f0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Фоновый градиент -->
+    <div class="grid-bg"></div>
+
+    <!-- Навигация -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-database"></i>
+                </div>
+                <span>AI Files Archive</span>
+            </a>
+            
+            <div class="nav-links">
+                <a href="#dashboard" class="nav-link active">
+                    <i class="fas fa-home"></i> Хранилище
+                </a>
+                <a href="#upload" class="nav-link">
+                    <i class="fas fa-cloud-upload-alt"></i> Загрузить
+                </a>
+                <a href="#files" class="nav-link">
+                    <i class="fas fa-folder-open"></i> Файлы
+                </a>
+                <a href="#stats" class="nav-link">
+                    <i class="fas fa-chart-bar"></i> Статистика
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Основной контент -->
+    <main class="main-container">
+        <!-- Приветствие -->
+        <section class="section-header fade-in">
+            <h1 class="section-title">Хранилище файлов от AI</h1>
+            <p class="section-subtitle">Сохраняйте и организуйте HTML, код и другие файлы от ChatGPT, DeepSeek, Grok, Claude и других</p>
+        </section>
+
+        <!-- Статистика -->
+        <section id="stats" class="fade-in">
+            <h2 style="margin-bottom: 1.5rem; font-size: 1.5rem; font-weight: 600;">Статистика</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon total">
+                        <i class="fas fa-folder"></i>
+                    </div>
+                    <span class="stat-number" id="total-files">0</span>
+                    <span class="stat-label">Всего файлов</span>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon chatgpt">
+                        <i class="fab fa-openai"></i>
+                    </div>
+                    <span class="stat-number" id="chatgpt-files">0</span>
+                    <span class="stat-label">ChatGPT</span>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon deepseek">
+                        <i class="fas fa-search"></i>
+                    </div>
+                    <span class="stat-number" id="deepseek-files">0</span>
+                    <span class="stat-label">DeepSeek</span>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon grok">
+                        <i class="fab fa-x-twitter"></i>
+                    </div>
+                    <span class="stat-number" id="grok-files">0</span>
+                    <span class="stat-label">Grok</span>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon claude">
+                        <i class="fas fa-user-tie"></i>
+                    </div>
+                    <span class="stat-number" id="claude-files">0</span>
+                    <span class="stat-label">Claude</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Форма загрузки -->
+        <section id="upload" class="fade-in">
+            <div class="section-header">
+                <h2 class="section-title">Загрузить файл</h2>
+                <p class="section-subtitle">Добавьте HTML, код или другие файлы от AI</p>
+            </div>
+            
+            <div class="upload-card">
+                <div class="upload-area" id="uploadArea">
+                    <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                    <h3 style="margin-bottom: 0.5rem;">Перетащите файлы сюда</h3>
+                    <p style="color: var(--text-secondary); margin-bottom: 1rem;">или</p>
+                    <button class="btn btn-primary" id="browseBtn">
+                        <i class="fas fa-folder-open"></i> Выберите файл
+                    </button>
+                    <input type="file" id="fileInput" style="display: none;" accept=".html,.htm,.js,.css,.txt,.json,.md,.py,.java,.cpp">
+                    <p style="color: var(--text-muted); margin-top: 1rem; font-size: 0.9rem;">
+                        Поддерживаемые форматы: HTML, JS, CSS, TXT, JSON, MD, Python, Java, C++
+                    </p>
+                </div>
+                
+                <form id="upload-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="form-label" for="ai-source">
+                                <i class="fas fa-robot"></i> AI модель
+                            </label>
+                            <select id="ai-source" class="form-control" required>
+                                <option value="">Выберите AI</option>
+                                <option value="chatgpt">ChatGPT (OpenAI)</option>
+                                <option value="deepseek">DeepSeek</option>
+                                <option value="grok">Grok (xAI)</option>
+                                <option value="claude">Claude (Anthropic)</option>
+                                <option value="gemini">Gemini (Google)</option>
+                                <option value="copilot">Copilot (Microsoft)</option>
+                                <option value="other">Другая модель</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="file-name">
+                                <i class="fas fa-file"></i> Название файла
+                            </label>
+                            <input type="text" id="file-name" class="form-control" placeholder="Например: landing-page.html">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="file-type">
+                                <i class="fas fa-code"></i> Тип файла
+                            </label>
+                            <select id="file-type" class="form-control">
+                                <option value="html">HTML</option>
+                                <option value="javascript">JavaScript</option>
+                                <option value="css">CSS</option>
+                                <option value="python">Python</option>
+                                <option value="text">Текст</option>
+                                <option value="json">JSON</option>
+                                <option value="other">Другой</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group" style="grid-column: span 2;">
+                            <label class="form-label" for="file-description">
+                                <i class="fas fa-align-left"></i> Описание
+                            </label>
+                            <textarea id="file-description" class="form-control" placeholder="Опишите, что делает этот файл..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="file-tags">
+                                <i class="fas fa-tags"></i> Теги
+                            </label>
+                            <input type="text" id="file-tags" class="form-control" placeholder="html, landing, responsive">
+                            <small style="color: var(--text-muted); font-size: 0.8rem;">Введите теги через запятую</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label" for="file-date">
+                                <i class="fas fa-calendar"></i> Дата создания
+                            </label>
+                            <input type="date" id="file-date" class="form-control">
+                        </div>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Сохранить файл
+                        </button>
+                        <button type="button" id="clear-form" class="btn btn-secondary">
+                            <i class="fas fa-eraser"></i> Очистить
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- Фильтры и поиск -->
+        <section id="files" class="fade-in">
+            <div class="section-header">
+                <h2 class="section-title">Мои файлы</h2>
+                <p class="section-subtitle">Всего файлов: <span id="files-count">0</span></p>
+            </div>
+
+            <div class="filters">
+                <button class="filter-btn active" data-filter="all">
+                    <i class="fas fa-layer-group"></i> Все
+                </button>
+                <button class="filter-btn" data-filter="chatgpt">
+                    <i class="fab fa-openai"></i> ChatGPT
+                </button>
+                <button class="filter-btn" data-filter="deepseek">
+                    <i class="fas fa-search"></i> DeepSeek
+                </button>
+                <button class="filter-btn" data-filter="grok">
+                    <i class="fab fa-x-twitter"></i> Grok
+                </button>
+                <button class="filter-btn" data-filter="claude">
+                    <i class="fas fa-user-tie"></i> Claude
+                </button>
+                <button class="filter-btn" data-filter="html">
+                    <i class="fab fa-html5"></i> HTML
+                </button>
+                <button class="filter-btn" data-filter="javascript">
+                    <i class="fab fa-js"></i> JavaScript
+                </button>
+                
+                <div class="search-box">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="search-input" class="search-input" placeholder="Поиск файлов...">
+                </div>
+            </div>
+
+            <div class="files-grid" id="files-container">
+                <!-- Файлы будут загружаться здесь -->
+                <div class="file-card skeleton" style="height: 250px;"></div>
+                <div class="file-card skeleton" style="height: 250px;"></div>
+                <div class="file-card skeleton" style="height: 250px;"></div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Модальное окно предпросмотра -->
+    <div class="modal" id="preview-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title" id="preview-title">Предпросмотр файла</h3>
+                <button class="modal-close" id="close-preview">&times;</button>
+            </div>
+            <div class="modal-body" id="preview-content">
+                <!-- Контент будет загружен здесь -->
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-secondary" id="close-modal">Закрыть</button>
+                <a href="#" class="btn btn-primary" id="download-file">
+                    <i class="fas fa-download"></i> Скачать
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Класс для управления файлами
+        class AIFileStorage {
+            constructor() {
+                this.files = [];
+                this.currentFilter = 'all';
+                this.searchQuery = '';
+                this.init();
+            }
+
+            init() {
+                this.loadFiles();
+                this.setupEventListeners();
+                this.renderFiles();
+                this.updateStats();
+                
+                // Устанавливаем сегодняшнюю дату по умолчанию
+                document.getElementById('file-date').value = new Date().toISOString().split('T')[0];
+                
+                // Загружаем примеры файлов если хранилище пустое
+                if (this.files.length === 0) {
+                    this.loadSampleFiles();
+                }
+            }
+
+            loadFiles() {
+                const stored = localStorage.getItem('ai_files_storage');
+                if (stored) {
+                    this.files = JSON.parse(stored);
+                }
+            }
+
+            loadSampleFiles() {
+                this.files = [
+                    {
+                        id: 1,
+                        name: 'Калькулятор на JavaScript',
+                        description: 'Интерактивный калькулятор с историей операций',
+                        ai: 'chatgpt',
+                        type: 'javascript',
+                        content: `// JavaScript калькулятор
+function calculate(expression) {
+    try {
+        return eval(expression);
+    } catch (error) {
+        return 'Error';
+    }
+}
+
+// Добавление в историю
+function addToHistory(expression, result) {
+    const history = JSON.parse(localStorage.getItem('calcHistory') || '[]');
+    history.unshift({ expression, result, timestamp: new Date() });
+    localStorage.setItem('calcHistory', JSON.stringify(history.slice(0, 10)));
+}`,
+                        tags: ['javascript', 'калькулятор', 'ui'],
+                        date: '2024-05-05',
+                        size: '2.1 KB',
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 2,
+                        name: 'Адаптивная навигация',
+                        description: 'Меню для мобильных устройств с анимацией',
+                        ai: 'deepseek',
+                        type: 'html',
+                        content: `<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Адаптивная навигация</title>
+    <style>
+        .navbar {
+            background: #2563eb;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+                flex-direction: column;
+                position: absolute;
+                top: 100%;
+                left: 0;
+                width: 100%;
+                background: #2563eb;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">Site</div>
+        <div class="nav-links">
+            <a href="#">Главная</a>
+            <a href="#">О нас</a>
+            <a href="#">Контакты</a>
+        </div>
+        <button class="menu-btn">☰</button>
+    </nav>
+</body>
+</html>`,
+                        tags: ['html', 'css', 'навигация', 'адаптив'],
+                        date: '2024-05-04',
+                        size: '1.8 KB',
+                        createdAt: new Date().toISOString()
+                    },
+                    {
+                        id: 3,
+                        name: 'API запрос на Python',
+                        description: 'Получение данных с API и обработка JSON',
+                        ai: 'grok',
+                        type: 'python',
+                        content: `import requests
+import json
+
+class APIClient:
+    def __init__(self, base_url):
+        self.base_url = base_url
+        self.session = requests.Session()
+        self.session.headers.update({
+            'User-Agent': 'AI-Files-Archive/1.0',
+            'Accept': 'application/json'
+        })
+    
+    def get_data(self, endpoint, params=None):
+        """Получение данных с API"""
+        try:
+            response = self.session.get(
+                f"{self.base_url}/{endpoint}",
+                params=params,
+                timeout=10
+            )
+            response.raise_for_status()
+            return response.json()
+        except requests.exceptions.RequestException as e:
+            print(f"Ошибка запроса: {e}")
+            return None
+    
+    def save_to_file(self, data, filename):
+        """Сохранение данных в файл"""
+        with open(filename, 'w', encoding='utf-8') as f:
+            json.dump(data, f, ensure_ascii=False, indent=2)`,
+                        tags: ['python', 'api', 'requests', 'json'],
+                        date: '2024-05-03',
+                        size: '1.2 KB',
+                        createdAt: new Date().toISOString()
+                    }
+                ];
+                this.saveFiles();
+            }
+
+            saveFiles() {
+                localStorage.setItem('ai_files_storage', JSON.stringify(this.files));
+                this.updateStats();
+            }
+
+            setupEventListeners() {
+                // Форма загрузки
+                document.getElementById('upload-form').addEventListener('submit', (e) => {
+                    e.preventDefault();
+                    this.saveFile();
+                });
+
+                // Очистка формы
+                document.getElementById('clear-form').addEventListener('click', () => {
+                    document.getElementById('upload-form').reset();
+                    document.getElementById('file-date').value = new Date().toISOString().split('T')[0];
+                });
+
+                // Выбор файла
+                document.getElementById('browseBtn').addEventListener('click', () => {
+                    document.getElementById('fileInput').click();
+                });
+
+                document.getElementById('fileInput').addEventListener('change', (e) => {
+                    const file = e.target.files[0];
+                    if (file) {
+                        this.handleFileSelect(file);
+                    }
+                });
+
+                // Drag and drop
+                const uploadArea = document.getElementById('uploadArea');
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.add('dragover');
+                });
+
+                uploadArea.addEventListener('dragleave', () => {
+                    uploadArea.classList.remove('dragover');
+                });
+
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.remove('dragover');
+                    
+                    const file = e.dataTransfer.files[0];
+                    if (file) {
+                        this.handleFileSelect(file);
+                    }
+                });
+
+                // Фильтры
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        this.currentFilter = btn.dataset.filter;
+                        this.renderFiles();
+                    });
+                });
+
+                // Поиск
+                document.getElementById('search-input').addEventListener('input', (e) => {
+                    this.searchQuery = e.target.value.toLowerCase();
+                    this.renderFiles();
+                });
+
+                // Навигация
+                document.querySelectorAll('.nav-link').forEach(link => {
+                    link.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        const target = link.getAttribute('href').substring(1);
+                        this.scrollToSection(target);
+                        
+                        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                        link.classList.add('active');
+                    });
+                });
+
+                // Модальное окно
+                document.getElementById('close-preview').addEventListener('click', () => {
+                    this.hidePreview();
+                });
+
+                document.getElementById('close-modal').addEventListener('click', () => {
+                    this.hidePreview();
+                });
+            }
+
+            handleFileSelect(file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const content = e.target.result;
+                    const name = file.name.replace(/\.[^/.]+$/, "");
+                    
+                    document.getElementById('file-name').value = name;
+                    document.getElementById('file-description').value = `Импортированный файл: ${file.name}`;
+                    
+                    // Определяем тип файла
+                    const extension = file.name.split('.').pop().toLowerCase();
+                    const typeMap = {
+                        'html': 'html',
+                        'htm': 'html',
+                        'js': 'javascript',
+                        'css': 'css',
+                        'txt': 'text',
+                        'json': 'json',
+                        'md': 'text',
+                        'py': 'python',
+                        'java': 'java',
+                        'cpp': 'cpp'
+                    };
+                    
+                    if (typeMap[extension]) {
+                        document.getElementById('file-type').value = typeMap[extension];
+                    }
+                    
+                    // Показываем уведомление
+                    this.showNotification(`Файл "${file.name}" загружен`, 'success');
+                };
+                reader.readAsText(file);
+            }
+
+            saveFile() {
+                const name = document.getElementById('file-name').value.trim();
+                const description = document.getElementById('file-description').value.trim();
+                const ai = document.getElementById('ai-source').value;
+                const type = document.getElementById('file-type').value;
+                const tags = document.getElementById('file-tags').value.trim();
+                let date = document.getElementById('file-date').value;
+                
+                if (!name || !ai) {
+                    this.showNotification('Заполните обязательные поля!', 'error');
+                    return;
+                }
+
+                const content = this.getFileContent(type);
+
+                const newFile = {
+                    id: Date.now(),
+                    name,
+                    description,
+                    ai,
+                    type,
+                    content,
+                    tags: tags ? tags.split(',').map(t => t.trim()) : [],
+                    date: date || new Date().toISOString().split('T')[0],
+                    size: this.calculateSize(content),
+                    createdAt: new Date().toISOString()
+                };
+
+                this.files.unshift(newFile);
+                this.saveFiles();
+                this.renderFiles();
+                
+                // Очистка формы
+                document.getElementById('file-name').value = '';
+                document.getElementById('file-description').value = '';
+                document.getElementById('file-tags').value = '';
+                document.getElementById('file-date').value = new Date().toISOString().split('T')[0];
+                
+                this.showNotification('Файл успешно сохранен!', 'success');
+            }
+
+            getFileContent(type) {
+                // Для демо просто возвращаем примеры контента
+                const examples = {
+                    'html': '<!DOCTYPE html>\n<html>\n<head>\n    <title>New File</title>\n</head>\n<body>\n    <h1>New HTML File</h1>\n</body>\n</html>',
+                    'javascript': '// JavaScript файл\nconsole.log("Hello from AI Files Archive!");',
+                    'css': '/* CSS файл */\nbody { margin: 0; padding: 0; }',
+                    'python': '# Python файл\nprint("Hello from AI Files Archive!")',
+                    'text': 'Текстовый файл, созданный с помощью AI Files Archive'
+                };
+                
+                return examples[type] || 'Содержимое файла';
+            }
+
+            calculateSize(content) {
+                const bytes = new Blob([content]).size;
+                if (bytes < 1024) return bytes + ' B';
+                if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+                return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+            }
+
+            renderFiles() {
+                const container = document.getElementById('files-container');
+                const filteredFiles = this.getFilteredFiles();
+                
+                document.getElementById('files-count').textContent = filteredFiles.length;
+
+                if (filteredFiles.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state" style="grid-column: 1 / -1; text-align: center; padding: 3rem;">
+                            <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;">
+                                <i class="fas fa-folder-open"></i>
+                            </div>
+                            <h3 style="margin-bottom: 0.5rem;">Файлы не найдены</h3>
+                            <p style="color: var(--text-secondary);">Попробуйте изменить фильтры или поисковый запрос</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = '';
+                
+                filteredFiles.forEach(file => {
+                    const card = this.createFileCard(file);
+                    container.appendChild(card);
+                });
+            }
+
+            getFilteredFiles() {
+                return this.files.filter(file => {
+                    // Фильтрация по AI
+                    if (this.currentFilter !== 'all' && this.currentFilter !== file.ai && this.currentFilter !== file.type) {
+                        return false;
+                    }
+                    
+                    // Поиск
+                    if (this.searchQuery) {
+                        const searchIn = `${file.name} ${file.description} ${file.tags.join(' ')}`.toLowerCase();
+                        return searchIn.includes(this.searchQuery);
+                    }
+                    
+                    return true;
+                });
+            }
+
+            createFileCard(file) {
+                const card = document.createElement('div');
+                card.className = 'file-card fade-in';
+                card.dataset.id = file.id;
+                
+                const aiNames = {
+                    'chatgpt': 'ChatGPT',
+                    'deepseek': 'DeepSeek',
+                    'grok': 'Grok',
+                    'claude': 'Claude',
+                    'gemini': 'Gemini',
+                    'copilot': 'Copilot',
+                    'other': 'Другая AI'
+                };
+
+                const aiIcons = {
+                    'chatgpt': 'fab fa-openai',
+                    'deepseek': 'fas fa-search',
+                    'grok': 'fab fa-x-twitter',
+                    'claude': 'fas fa-user-tie',
+                    'gemini': 'fab fa-google',
+                    'copilot': 'fas fa-code',
+                    'other': 'fas fa-robot'
+                };
+
+                const typeIcons = {
+                    'html': 'fab fa-html5',
+                    'javascript': 'fab fa-js',
+                    'css': 'fab fa-css3',
+                    'python': 'fab fa-python',
+                    'text': 'fas fa-file-alt',
+                    'json': 'fas fa-code',
+                    'other': 'fas fa-file'
+                };
+
+                card.innerHTML = `
+                    <div class="file-header">
+                        <span class="ai-badge ${file.ai}">
+                            <i class="${aiIcons[file.ai]}"></i>
+                            ${aiNames[file.ai]}
+                        </span>
+                        <span style="color: var(--text-muted); font-size: 0.875rem;">
+                            <i class="${typeIcons[file.type] || 'fas fa-file'}"></i>
+                            ${file.type}
+                        </span>
+                    </div>
+                    
+                    <h3 class="file-title">${this.escapeHtml(file.name)}</h3>
+                    <p class="file-description">${this.escapeHtml(file.description)}</p>
+                    
+                    <div class="file-info">
+                        <span><i class="far fa-calendar"></i> ${file.date}</span>
+                        <span><i class="fas fa-weight-hanging"></i> ${file.size}</span>
+                    </div>
+                    
+                    ${file.tags.length > 0 ? `
+                    <div class="file-tags">
+                        ${file.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                    </div>
+                    ` : ''}
+                    
+                    <div class="file-actions">
+                        <button class="btn btn-sm btn-primary view-btn">
+                            <i class="fas fa-eye"></i> Просмотр
+                        </button>
+                        <button class="btn btn-sm btn-secondary copy-btn">
+                            <i class="fas fa-copy"></i> Копировать
+                        </button>
+                        <button class="btn btn-sm btn-secondary delete-btn">
+                            <i class="fas fa-trash"></i> Удалить
+                        </button>
+                    </div>
+                `;
+
+                // Обработчики событий
+                card.querySelector('.view-btn').addEventListener('click', () => {
+                    this.showPreview(file);
+                });
+
+                card.querySelector('.copy-btn').addEventListener('click', () => {
+                    navigator.clipboard.writeText(file.content)
+                        .then(() => this.showNotification('Код скопирован!', 'success'));
+                });
+
+                card.querySelector('.delete-btn').addEventListener('click', () => {
+                    if (confirm('Удалить этот файл?')) {
+                        this.deleteFile(file.id);
+                    }
+                });
+
+                return card;
+            }
+
+            showPreview(file) {
+                const modal = document.getElementById('preview-modal');
+                const title = document.getElementById('preview-title');
+                const content = document.getElementById('preview-content');
+                const downloadBtn = document.getElementById('download-file');
+                
+                title.textContent = file.name;
+                
+                // Форматируем контент в зависимости от типа
+                let formattedContent = '';
+                if (file.type === 'html' || file.type === 'javascript' || file.type === 'css' || file.type === 'python') {
+                    formattedContent = `
+                        <div class="code-block">
+                            <pre><code>${this.escapeHtml(file.content)}</code></pre>
+                        </div>
+                    `;
+                } else {
+                    formattedContent = `
+                        <div style="background: rgba(255,255,255,0.05); padding: 1rem; border-radius: var(--radius-md);">
+                            <pre style="white-space: pre-wrap; font-family: inherit;">${this.escapeHtml(file.content)}</pre>
+                        </div>
+                    `;
+                }
+                
+                content.innerHTML = `
+                    <div style="margin-bottom: 1.5rem;">
+                        <div style="display: flex; gap: 1rem; margin-bottom: 1rem;">
+                            <span class="ai-badge ${file.ai}">
+                                <i class="${this.getAIIcon(file.ai)}"></i>
+                                ${this.getAIName(file.ai)}
+                            </span>
+                            <span style="color: var(--text-muted);">
+                                <i class="fas fa-file"></i> ${file.type.toUpperCase()}
+                            </span>
+                            <span style="color: var(--text-muted);">
+                                <i class="fas fa-weight-hanging"></i> ${file.size}
+                            </span>
+                        </div>
+                        
+                        <p style="color: var(--text-secondary); margin-bottom: 1rem;">${file.description}</p>
+                        
+                        ${file.tags.length > 0 ? `
+                        <div class="file-tags" style="margin-bottom: 1rem;">
+                            ${file.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                        ` : ''}
+                    </div>
+                    ${formattedContent}
+                `;
+                
+                // Создаем ссылку для скачивания
+                const blob = new Blob([file.content], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                downloadBtn.href = url;
+                downloadBtn.download = file.name + '.' + file.type;
+                
+                modal.style.display = 'flex';
+            }
+
+            hidePreview() {
+                const modal = document.getElementById('preview-modal');
+                modal.style.display = 'none';
+            }
+
+            deleteFile(id) {
+                this.files = this.files.filter(file => file.id !== id);
+                this.saveFiles();
+                this.renderFiles();
+                this.showNotification('Файл удален', 'info');
+            }
+
+            updateStats() {
+                const counts = {
+                    total: this.files.length,
+                    chatgpt: 0,
+                    deepseek: 0,
+                    grok: 0,
+                    claude: 0
+                };
+
+                this.files.forEach(file => {
+                    if (counts[file.ai] !== undefined) {
+                        counts[file.ai]++;
+                    }
+                });
+
+                document.getElementById('total-files').textContent = counts.total;
+                document.getElementById('chatgpt-files').textContent = counts.chatgpt;
+                document.getElementById('deepseek-files').textContent = counts.deepseek;
+                document.getElementById('grok-files').textContent = counts.grok;
+                document.getElementById('claude-files').textContent = counts.claude;
+            }
+
+            scrollToSection(sectionId) {
+                const element = document.getElementById(sectionId);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+
+            showNotification(message, type = 'info') {
+                const notification = document.createElement('div');
+                notification.className = `notification ${type}`;
+                notification.innerHTML = `
+                    <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                    <span>${message}</span>
+                `;
+                
+                document.body.appendChild(notification);
+                
+                setTimeout(() => {
+                    notification.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => notification.remove(), 300);
+                }, 3000);
+            }
+
+            escapeHtml(text) {
+                const div = document.createElement('div');
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            getAIName(ai) {
+                const names = {
+                    'chatgpt': 'ChatGPT',
+                    'deepseek': 'DeepSeek',
+                    'grok': 'Grok',
+                    'claude': 'Claude',
+                    'gemini': 'Gemini',
+                    'copilot': 'Copilot',
+                    'other': 'Другая AI'
+                };
+                return names[ai] || ai;
+            }
+
+            getAIIcon(ai) {
+                const icons = {
+                    'chatgpt': 'fab fa-openai',
+                    'deepseek': 'fas fa-search',
+                    'grok': 'fab fa-x-twitter',
+                    'claude': 'fas fa-user-tie',
+                    'gemini': 'fab fa-google',
+                    'copilot': 'fas fa-code',
+                    'other': 'fas fa-robot'
+                };
+                return icons[ai] || 'fas fa-robot';
+            }
+        }
+
+        // Инициализация при загрузке страницы
+        document.addEventListener('DOMContentLoaded', () => {
+            window.fileStorage = new AIFileStorage();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+/* Темная тема по умолчанию */
+body {
+    background-color: #0f172a;
+    color: #f1f5f9;
+}
+
+/* Если нужно светлая тема - добавляем класс .light-theme к body */
+body.light-theme {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-hover: #f1f5f9;
+    --border: #e2e8f0;
+    
+    --text-primary: #1e293b;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+}
+
+body.light-theme .navbar {
+    background: rgba(255, 255, 255, 0.95);
+    border-bottom-color: var(--border);
+}
+
+body.light-theme .stat-card,
+body.light-theme .file-card,
+body.light-theme .modal-content,
+body.light-theme .drop-zone {
+    background: var(--bg-card);
+    border-color: var(--border);
+}
+
+body.light-theme .form-input,
+body.light-theme .form-select,
+body.light-theme .form-textarea {
+    background: var(--bg-secondary);
+    border-color: var(--border);
+    color: var(--text-primary);
+}
+
+body.light-theme .btn-secondary {
+    background: var(--bg-secondary);
+    color: var(--text-primary);
+    border-color: var(--border);
+}
+
+body.light-theme .ai-badge {
+    opacity: 0.9;
+}
+
+body.light-theme .modal-body pre {
+    background: #f1f5f9;
+}
+
+/* Плавный переход темы */
+body, .navbar, .stat-card, .file-card, .modal-content, .drop-zone,
+.form-input, .form-select, .form-textarea, .btn-secondary {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
+}
